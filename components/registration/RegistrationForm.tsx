@@ -1,78 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useFormHandler } from '@/hooks/useFormHandler';
+import { COUNTRIES, INTERESTS, GENDERS } from '@/lib/constants';
 import styles from './RegistrationForm.module.css';
 
 export default function RegistrationForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    country: '',
-    gender: '',
-    interests: [] as string[],
-    bio: '',
-    dob: '',
-    terms: false
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const countries = ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'Japan'];
-  const interestsList = ['Technology', 'Design', 'Business', 'Art', 'Sports'];
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    
-    if (!formData.country) newErrors.country = 'Please select a country';
-    if (!formData.gender) newErrors.gender = 'Please select your gender';
-    if (formData.interests.length === 0) newErrors.interests = 'Select at least one interest';
-    if (!formData.dob) newErrors.dob = 'Date of birth is required';
-    if (!formData.terms) newErrors.terms = 'You must accept the terms';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
-      const checkbox = e.target as HTMLInputElement;
-      if (name === 'terms') {
-        setFormData(prev => ({ ...prev, terms: checkbox.checked }));
-      } else {
-        const interest = value;
-        setFormData(prev => ({
-          ...prev,
-          interests: checkbox.checked 
-            ? [...prev.interests, interest] 
-            : prev.interests.filter(i => i !== interest)
-        }));
-      }
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-    
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
+  const { formData, errors, isSubmitting, setIsSubmitting, handleChange, validate } = useFormHandler();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,7 +98,7 @@ export default function RegistrationForm() {
                 onChange={handleChange}
               >
                 <option value="" style={{ color: 'black' }}>Select Country</option>
-                {countries.map(c => <option key={c} value={c} style={{ color: 'black' }}>{c}</option>)}
+                {COUNTRIES.map(c => <option key={c} value={c} style={{ color: 'black' }}>{c}</option>)}
               </select>
               {errors.country && <p className={styles.errorText}><span>⚠</span> {errors.country}</p>}
             </div>
@@ -172,7 +107,7 @@ export default function RegistrationForm() {
             <div className={styles.formGroup}>
               <label className={styles.label}>Gender</label>
               <div className={styles.radioContainer}>
-                {['Male', 'Female', 'Other'].map(g => (
+                {GENDERS.map(g => (
                   <label key={g} className={styles.radioGroup}>
                     <input 
                       type="radio" 
@@ -193,7 +128,7 @@ export default function RegistrationForm() {
             <div className={`${styles.formGroup} ${styles.fullWidth}`}>
               <label className={styles.label}>Interests</label>
               <div className={styles.interestsGrid}>
-                {interestsList.map(interest => (
+                {INTERESTS.map(interest => (
                   <label key={interest} className={styles.checkboxGroup}>
                     <input 
                       type="checkbox" 

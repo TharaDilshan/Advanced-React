@@ -1,13 +1,14 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
+import { UserProfile } from '@/types/form.types';
 import styles from './ProfileSummary.module.css';
 
 export default function ProfileSummary() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const data = {
+  const data: UserProfile = {
     name: searchParams.get('name'),
     email: searchParams.get('email'),
     country: searchParams.get('country'),
@@ -53,7 +54,7 @@ export default function ProfileSummary() {
             {data.bio && (
               <>
                 <span className={styles.label}>Bio:</span>
-                <span className={styles.value} style={{ fontStyle: 'italic' }}>"{data.bio}"</span>
+                <span className={styles.value} style={{ fontStyle: 'italic' }}>&quot;{data.bio}&quot;</span>
               </>
             )}
           </div>
